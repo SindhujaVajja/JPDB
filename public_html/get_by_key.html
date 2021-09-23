@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>GET_BY_KEY Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Get Details of Employees Form</h2>
+            <form id="empForm" method="post">
+                <div class="form-group">
+                    <label for="empId">Employee ID:</label>
+                    <input type="text" class="form-control" id="empId"
+                           placeholder="Get record by Employee ID" name="empId">
+                </div>
+                <p><b>OR</b></p>
+                <div class="form-group">
+                    <label for="empName">Employee Name:</label>
+                    <input type="text" class="form-control" id="empName"
+                           placeholder="Get record by Employee Name" name="empName">
+                </div>
+                <p><b>OR</b></p>
+                <div class="form-group">
+                    <label for="empEmail">Email:</label>
+                    <input type="email" class="form-control" id="empEmail"
+                           placeholder="Get record by Employee Email" name="empEmail">
+                </div>
+
+                <input type="button" class="btn btn-primary" id="getRec" value="Get Record"
+                       onclick="getRecord();"> <br> <br>
+
+                <div class="form-group">
+                    <input type="text" name="recordbox" class="form-control" id="recordbox" readonly>
+                </div>
+
+
+            </form>
+        </div>                               
+
+        <script>
+            var jsonStrObj = {};
+            function validateAndGetFormData() {
+                var empIdVar = $("#empId").val();
+                var empNameVar = $("#empName").val();
+                var empEmailVar = $("#empEmail").val();
+                if (empIdVar === "" && empNameVar === "" && empEmailVar === "") {
+                    alert("Please enter one of among Employee ID, Employee Name and Email to retrieve its record from the database");
+                    $("#empID").focus();
+                    return "";
+                }
+
+                if (empIdVar === "") {
+                    $("#empId").focus();
+                } else {
+                    jsonStrObj.empId = empIdVar;
+                }
+
+                if (empNameVar === "") {
+                    $("#empName").focus();
+                } else {
+                    jsonStrObj.empName = empNameVar;
+                }
+
+                if (empEmailVar === "") {
+                    $("#empEmail").focus();
+                } else {
+                    jsonStrObj.empEmail = empEmailVar;
+                }
+
+                return JSON.stringify(jsonStrObj);
+            }
+
+            function createGET_BY_KEYRequest(token, dbname, relationName, jsonObjStr, createTime, updateTime) {
+                if (createTime !== undefined) {
+                    if (createTime !== true) {
+                        createTime = false;
+                    }
+                } else {
+                    createTime = false;
+                }
+                if (updateTime !== undefined) {
+                    if (updateTime !== true) {
+                        updateTime = false;
+                    }
+                } else {
+                    updateTime = false;
+                }
+                var value1 = "{\n"
+                        + "\"token\" : \""
+                        + token
+                        + "\",\n" + "\"cmd\" : \"GET_BY_KEY\",\n"
+                        + "\"dbName\": \""
+                        + dbname
+                        + "\",\n"
+                        + "\"rel\" : \""
+                        + relationName
+                        + "\",\n"
+                        + "\"jsonStr\":\n"
+                        + jsonObjStr
+                        + "\,"
+                        + "\"createTime\":"
+                        + createTime
+                        + "\,"
+                        + "\"updateTime\":"
+                        + updateTime
+                        + "\n"
+                        + "}";
+                return value1;
+            }
+          
+            function resetForm() {
+                $("#empId").val("");
+                $("#empName").val("");
+                $("#empEmail").val("");
+                $("#empId").focus();
+            }
+
+            function getRecord() {
+                var jsonStr = validateAndGetFormData();
+                if (jsonStr === "") {
+                    return;
+                }               
+                var getbykeyReqStr = createGET_BY_KEYRequest("90936126|-31948821615488398|90944131",
+                        "EMPLOYEES", "EMP-REL", jsonStr, true, true);                
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(getbykeyReqStr, "http://api.login2explore.com:5577", "/api/irl");
+                jQuery.ajaxSetup({async: true});               
+                var recordbox = document.getElementById('recordbox');
+                recordbox.value = JSON.stringify(resultObj);
+                resetForm();
+            }
+        </script>
+    </body>
+</html>

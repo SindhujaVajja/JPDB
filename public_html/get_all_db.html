@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>GET_ALL_DB Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Get all the databases names from JPDB</h2>
+            <form id="empForm" method="post">
+
+                <div class="form-group">
+                    <label for="connToken">Enter Connection Token:</label>
+                    <input type="text" class="form-control" id="connToken"
+                           placeholder="Please enter Connection Token" name="connToken">
+                </div>
+
+                <input type="button" class="btn btn-primary" id="getAllDb" value="Retrieve all DB names in JPDB"
+                       onclick="getAllDB();"> <br> <br>
+
+                <div class="form-group">
+                    <input type="text" name="recordbox" class="form-control" id="recordbox" readonly>
+                </div>
+
+            </form>
+        </div>                               
+
+        <script>
+            var connTokenVar;
+            function validateAndGetFormData() {
+                connTokenVar = $("#connToken").val();
+                if (connTokenVar === "") {
+                    alert("Connection Token is required value");
+                    $("#connToken").focus();
+                    return "";
+                }
+                return connTokenVar;
+            }
+
+            function createGET_ALL_DBRequest(token) {
+                var req = "{\n"
+                        + "\"token\" : \""
+                        + token
+                        + "\",\n"
+                        + "\"cmd\" : \"GET_ALL_DB\"\n"
+                        + "}";
+                return req;
+            }
+
+            function resetForm() {
+                $("#connToken").val("");
+                $("#connToken").focus();
+            }
+
+            function getAllDB() {
+                var recStr = validateAndGetFormData();
+                if (recStr === "") {
+                    return;
+                }
+                var getRecordReqStr = createGET_ALL_DBRequest(recStr);              
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(getRecordReqStr, "http://api.login2explore.com:5577", "/api/irl");
+                jQuery.ajaxSetup({async: true});
+                var recordbox = document.getElementById('recordbox');
+                recordbox.value = JSON.stringify(resultObj);
+                resetForm();
+            }
+
+        </script>
+    </body>
+</html>

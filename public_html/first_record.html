@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>FIRST_RECORD Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Get first record from any relation in JPDB</h2>
+            <form id="empForm" method="post">
+
+                <div class="form-group">
+                    <label for="dbName">Database Name:</label>
+                    <input type="text" class="form-control" id="dbName"
+                           placeholder="Please enter Database Name to retrieve record from" name="dbName">
+                </div>
+
+                <div class="form-group">
+                    <label for="relName">Relation Name:</label>
+                    <input type="text" class="form-control" id="relName"
+                           placeholder="Please enter Relation Name to retrieve record from" name="relName">
+                </div>
+
+                <input type="button" class="btn btn-primary" id="getFirstRec" value="Get First Record"
+                       onclick="getFirstRecord();"> <br> <br>
+
+                <div class="form-group">
+                    <input type="text" name="recordbox" class="form-control" id="recordbox" readonly>
+                </div>
+
+
+            </form>
+        </div>                               
+
+        <script>
+            var dbNameVar;
+            var relNameVar;
+            
+            function validateAndGetFormData() {
+                dbNameVar = $("#dbName").val();
+                relNameVar = $("#relName").val();
+
+                if (dbNameVar === "") {
+                    alert("Database Name is required value");
+                    $("#dbName").focus();
+                    return "";
+                }
+
+                if (relNameVar === "") {
+                    alert("Relation name is required value");
+                    $("#relName").focus();
+                    return "";
+                }
+                return true;
+            }
+          
+            function resetForm() {
+                $("#dbName").val("");
+                $("#relName").val("");          
+                $("#dbName").focus();
+            }
+            
+            function getFirstRecord() {
+                var recStr = validateAndGetFormData();
+                if (recStr === "") {
+                    return;
+                }
+                var getRecordReqStr = createFIRST_RECORDRequest("90936126|-31948821615488398|90944131",
+                        dbNameVar, relNameVar, true, true);                
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(getRecordReqStr, "http://api.login2explore.com:5577", "/api/irl");
+                jQuery.ajaxSetup({async: true});                
+                var recordbox = document.getElementById('recordbox');
+                recordbox.value = JSON.stringify(resultObj);
+                resetForm();
+            }
+            
+        </script>
+    </body>
+</html>

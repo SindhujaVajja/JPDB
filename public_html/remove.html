@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>REMOVE Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Remove records from JPDB database</h2>
+            <form id="empForm" method="post">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="recNo">Record Number:</label>                           
+                        <input type="text" class="form-control" name="recNo" id="recNo"
+                               placeholder="Enter Record Number to delete from the relation" required>
+                    </div>
+                    
+                    <input type="button" class="btn btn-primary" id="delete" value="Delete"
+                           onclick="deleteRecord();">
+                </div>                               
+            </form>
+        </div>
+
+        <script>
+           
+            function validateAndGetFormData() {
+                var empRec = $("#recNo").val();
+                if (empRec === "") {
+                    alert("Please Enter Record Number to delete. It is required value");
+                    $("#recNo").focus();
+                    return "";
+                }                               
+                return empRec;
+            }
+
+            function resetForm() {
+                $("#recNo").val("");
+                $("#recNo").focus();
+            }
+
+            function deleteRecord() {
+                var jsonStr = validateAndGetFormData();
+                if (jsonStr === "") {
+                    return;
+                }
+                var deleteReqStr = createREMOVERecordRequest("90936126|-31948821615488398|90944131",
+                        "EMPLOYEES", "EMP-REL", jsonStr);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(deleteReqStr, "http://api.login2explore.com:5577", "/api/iml");
+                jQuery.ajaxSetup({async: true});
+                alert("Successfully Removed");
+                resetForm();
+            }
+        </script>
+    </body>
+</html>

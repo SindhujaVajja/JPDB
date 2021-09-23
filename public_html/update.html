@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>UPDATE Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Update record in the JPDB database relation</h2>
+            <form id="empForm" method="post">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="recNo">Record Number:</label>                           
+                        <input type="text" class="form-control" name="recNo" id="recNo"
+                               placeholder="Enter Record Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empName">Employee Name:</label>
+                        <input type="text" class="form-control" id="empName"
+                               placeholder="Enter Employee Name to update" name="empName">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="empEmail">Employee Email:</label>
+                        <input type="text" class="form-control" id="empEmail"
+                               placeholder="Enter Employee Email to update" name="empEmail">
+                    </div>
+
+                    <input type="button" class="btn btn-primary" id="update" value="Update"
+                           onclick="updateRecord();">
+                </div>                               
+            </form>
+        </div>
+
+        <script>
+            var jsonStrObj = {};
+            var empRec;
+            function validateAndGetFormData() {
+                empRec = $("#recNo").val();
+
+                if (empRec === "") {
+                    alert("Employee Record Number is Required Value");
+                    $("#recNo").focus();
+                    return "";
+                }
+           
+                var empNameVar = $("#empName").val();
+                var empEmailVar = $("#empEmail").val();
+                
+                if (empNameVar === "" && empEmailVar === "") {
+                    alert("Please enter either Employee Name or Email to update in the database");
+                    $("#empName").focus();
+                    return "";
+                }
+                
+                if (empNameVar === "") {
+                    $("#empName").focus();                 
+                } else {
+                    jsonStrObj.empName = empNameVar;
+                }
+                
+                if (empEmailVar === "") {
+                    $("#empEmail").focus();                   
+                } else {
+                    jsonStrObj.empEmail = empEmailVar;
+                }
+                return JSON.stringify(jsonStrObj);
+            }
+
+            function resetForm() {
+                $("#recNo").val("");
+                $("#empName").val("");
+                $("#empEmail").val("");
+                $("#recNo").focus();
+            }
+
+            function updateRecord() {
+                var jsonStr = validateAndGetFormData();
+                if (jsonStr === "") {
+                    return;
+                }               
+                var updateReqStr = createUPDATERecordRequest("90936126|-31948821615488398|90944131",
+                        jsonStr, "EMPLOYEES", "EMP-REL", empRec);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(updateReqStr, "http://api.login2explore.com:5577", "/api/iml");
+                jQuery.ajaxSetup({async: true});
+                resetForm();
+            }
+        </script>
+    </body>
+</html>

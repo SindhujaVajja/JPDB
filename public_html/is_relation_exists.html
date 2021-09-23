@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>IS_RELATION_EXISTS Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet"
+              href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <script src="http://login2explore.com/jpdb/resources/js/jpdb-commons.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h2>Check whether a relation exists or not in the JPDB database</h2>
+            <form id="empForm" method="post">
+
+                <div class="form-group">
+                    <label for="connToken">Enter Connection Token:</label>
+                    <input type="text" class="form-control" id="connToken"
+                           placeholder="Please enter Connection Token" name="connToken">
+                </div>
+
+                <div class="form-group">
+                    <label for="dbName">Database Name:</label>
+                    <input type="text" class="form-control" id="dbName"
+                           placeholder="Please enter Database Name" name="dbName">
+                </div>
+
+                <div class="form-group">
+                    <label for="relName">Relation Name:</label>
+                    <input type="text" class="form-control" id="relName"
+                           placeholder="Please enter Relation Name" name="relName">
+                </div>               
+
+                <input type="button" class="btn btn-primary" id="checkRelExst" value="Check if the Relation exists"
+                       onclick="checkRelExists();"> <br> <br>
+
+                <div class="form-group">
+                    <input type="text" name="recordbox" class="form-control" id="recordbox" readonly>
+                </div>
+
+            </form>
+        </div>                               
+
+        <script>
+            var connTokenVar;
+            var dbNameVar;
+            var relNameVar;           
+            function validateAndGetFormData() {
+                connTokenVar = $("#connToken").val();
+                dbNameVar = $("#dbName").val();
+                relNameVar = $("#relName").val();              
+                if (connTokenVar === "") {
+                    alert("Connection Token is required value");
+                    $("#connToken").focus();
+                    return "";
+                }
+                if (dbNameVar === "") {
+                    alert("Database Name is required value");
+                    $("#dbName").focus();
+                    return "";
+                }
+                if (relNameVar === "") {
+                    alert("Relation name is required value");
+                    $("#relName").focus();
+                    return "";
+                }                
+                return true;
+            }
+
+            function createIS_RELATION_EXISTSRequest(token, dbName, relName) {
+                var req = "{\n"
+                        + "\"token\" : \""
+                        + token
+                        + "\","
+                        + "\"cmd\" : \"IS_RELATION_EXISTS\",\n"
+                        + "\"dbName\": \""
+                        + dbName
+                        + "\",\n" 
+                        + "\"rel\" : \""
+                        + relName
+                        + "\"\n"
+                        + "}";
+                return req;
+            }
+
+            function resetForm() {
+                $("#connToken").val("");
+                $("#dbName").val("");
+                $("#relName").val("");                
+                $("#connToken").focus();
+            }
+
+            function checkRelExists() {
+                var recStr = validateAndGetFormData();
+                if (recStr === "") {
+                    return;
+                }
+                var getRecordReqStr = createIS_RELATION_EXISTSRequest(connTokenVar, dbNameVar, relNameVar);
+                jQuery.ajaxSetup({async: false});
+                var resultObj = executeCommandAtGivenBaseUrl(getRecordReqStr, "http://api.login2explore.com:5577", "/api/irl");
+                jQuery.ajaxSetup({async: true});
+                var recordbox = document.getElementById('recordbox');
+                recordbox.value = JSON.stringify(resultObj);
+                resetForm();
+            }
+
+        </script>
+    </body>
+</html>
