@@ -1,7 +1,7 @@
 (This is my first repository on JsonPowerDB IML and IRL commands
 Kindly let me know if the code can be improved.)
 
-Title: JsonPowerDB IML and IRL API commands implementation 
+#JsonPowerDB IML and IRL API commands implementation 
 
 Description:
   This project is about the basics of JPDB API Commands and how to implement and use them in projects. Here I tried implementing and using IML - Index Manipulation Language (4 commands) and IRL - Index Retrieval Language (21 commands).
